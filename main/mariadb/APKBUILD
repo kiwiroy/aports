@@ -14,7 +14,7 @@ license="GPL"
 depends="$pkgname-common"
 depends_dev="openssl-dev zlib-dev"
 makedepends="cmake openssl-dev zlib-dev readline-dev libaio-dev ncurses-dev
-	linux-headers"
+	linux-headers cracklib-dev"
 install="$pkgname.pre-install"
 source="https://downloads.mariadb.org/interstitial/mariadb-$pkgver/source/mariadb-$pkgver.tar.gz
 	$pkgname.initd
@@ -25,6 +25,7 @@ source="https://downloads.mariadb.org/interstitial/mariadb-$pkgver/source/mariad
 subpackages="$pkgname-doc $pkgname-dev $pkgname-common
 	$pkgname-client-libs:_client_libs $pkgname-libs
 	$pkgname-client $pkgname-bench $pkgname-test:mytest
+	$pkgname-cracklib-passwd-check:_cracklib_passwd_check
 	mysql mysql-client:_compat_client mysql-bench:_compat_bench"
 
 _builddir="$srcdir/$pkgname-$pkgver"
@@ -168,6 +169,15 @@ bench() {
 	replaces="mariadb"
 	mkdir -p "$subpkgdir"/usr/share/
 	mv "$pkgdir"/usr/sql-bench "$subpkgdir"/usr/share
+}
+
+_cracklib_passwd_check() {
+	pkgdesc="MariaDB password checker using cracklib"
+	depends="cracklib mariadb"
+	mkdir -p "$subpkgdir"/usr/lib/mysql/plugin || return 1
+	mv "$pkgdir"/usr/lib/mysql/plugin/cracklib_password_check.so \
+		"$subpkgdir"/usr/lib/mysql/plugin/cracklib_password_check.so \
+		|| return 1
 }
 
 _compat() {
